@@ -1,0 +1,22 @@
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    color: white;
+    font-family: sans-serif;
+}
+
+#juego {
+    display: flex;
+    flex-direction: column; /* todos los canvas uno debajo del otro */
+    align-items: center;    /* centrado horizontal */
+    gap: 10px;              /* espacio entre los canvas */
+}
+
+canvas {
+    display: block;
+    border: 1px solid #000; /* opcional, para ver los bordes */
+}

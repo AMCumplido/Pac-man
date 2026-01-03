@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pacman</title>
+        <link rel="stylesheet" href="JuegoCSS.css"/>
+    </head>
+    <body>
+        <h1>Pac-man</h1>
+        <!--<canvas id="fondo" width="1920" height="1080"></canvas>-->
+        <div id="juego">
+                <canvas id="lienzo" width="420" height="500"></canvas> 
+            <div>
+                <canvas id="pacman" width="128" height="16"></canvas>
+            </div>
+            <div>
+                <canvas id="pacmanDeath" width="160" height="16"></canvas>
+            </div>
+            <div>
+                <canvas id="fantasmas" width="512" height="16"></canvas>
+            </div>
+            <div>
+                <canvas id="fantasmas2" width="128" height="16"></canvas>
+            </div>
+            <div>
+                <canvas id="frutas" width="128" height="16"></canvas>
+            </div>
+        </div>
+        <script>
+            //Contextos
+            var pacmanContext = document.getElementById("pacman").getContext("2d");
+            var pacmanDeathContext = document.getElementById("pacmanDeath").getContext("2d");
+            var fantasmasContext = document.getElementById("fantasmas").getContext("2d");
+            var fantasmas2Context = document.getElementById("fantasmas2").getContext("2d");
+            var frutasContext = document.getElementById("frutas").getContext("2d");
+            //Lienzos
+            var pacmanLienzo = document.getElementById("pacman");
+            var pacmanDeathLienzo = document.getElementById("pacmanDeath");
+            var fantasmasLienzo = document.getElementById("fantasmas");
+            var fantasmas2Lienzo = document.getElementById("fantasmas2");
+            var frutasLienzo = document.getElementById("frutas");
+
+            //Informacion de construccion
+            var widthSprite = 16;
+            var heightSprite = 16;
+            var graficos = false;
+
+            //Lista de arrays
+            var pacmanList = Array();
+            var pacmanDeathList = Array();
+            var fantasmasList = Array();
+            var fantasmas2List = Array();
+            var frutaList = Array();
+
+        </script>
+        <script src="Sprites.js"></script>
+        <script src="Pacman.js"></script>
+        <script src="Fantasmas.js"></script>
+        <script src="Juego.js"></script>
+        <footer>
+            <p>Autor: Alejandro Miguel Cumplido Alastuey</p>
+            <p>Fecha: 13/01/2026</p>
+        </footer>
+    </body>
+</html>
