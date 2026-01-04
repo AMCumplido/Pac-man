@@ -26,23 +26,24 @@
             </div>
         </div>
         <script>
-            //Contextos
-            var pacmanContext = document.getElementById("pacman").getContext("2d");
-            var pacmanDeathContext = document.getElementById("pacmanDeath").getContext("2d");
-            var fantasmasContext = document.getElementById("fantasmas").getContext("2d");
-            var fantasmas2Context = document.getElementById("fantasmas2").getContext("2d");
-            var frutasContext = document.getElementById("frutas").getContext("2d");
-            //Lienzos
+            //variables globales para todo el codigo
+
+            //Lienzo de juego
+            var canvas = document.getElementById("lienzo");
+            //lienzos de muestreo
             var pacmanLienzo = document.getElementById("pacman");
             var pacmanDeathLienzo = document.getElementById("pacmanDeath");
             var fantasmasLienzo = document.getElementById("fantasmas");
             var fantasmas2Lienzo = document.getElementById("fantasmas2");
             var frutasLienzo = document.getElementById("frutas");
 
-            //Informacion de construccion
-            var widthSprite = 16;
-            var heightSprite = 16;
-            var graficos = false;
+            //Contextos
+            var canvasContext = canvas.getContext("2d");
+            var pacmanContext = pacmanLienzo.getContext("2d");
+            var pacmanDeathContext = pacmanDeathLienzo.getContext("2d");
+            var fantasmasContext = fantasmasLienzo.getContext("2d");
+            var fantasmas2Context = fantasmas2Lienzo.getContext("2d");
+            var frutasContext = frutasLienzo.getContext("2d");         
 
             //Lista de arrays
             var pacmanList = Array();
