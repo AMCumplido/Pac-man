@@ -1,5 +1,8 @@
 //Lectura de sprites
-
+//Informacion de construccion
+var widthSprite = 16;
+var heightSprite = 16;
+var graficos = false;
 //Metodos
 cargaIMG();
 
@@ -10,7 +13,6 @@ function constructorSprite(imgFuente, x, y, width, height){
     this.y = y;
     this.width = width;
     this.height = height;
-
     this.dibuja = function(contexto, x, y){
         contexto.drawImage(this.img, this.x, this.y, this.width, this.height, x, y, this.width, this.height);
     }
@@ -85,7 +87,8 @@ function cargaIMG(){
     }
 
 }
-function spriteView(contexto, lista){   
+function spriteView(contexto, lista){  
+    //para ver los sprites en los lienzos de muestreo 
     for(var i=0; i<lista.length; i++){
         lista[i].dibuja(contexto, i*16, 0);
     }
