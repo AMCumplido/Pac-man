@@ -1,19 +1,20 @@
-const canvas = document.getElementById("lienzo");
-const canvasContext = canvas.getContext("2d");
-
-function createRect (x, y, width, height, color) {
-    canvasContext.fillStyle = color;
-    canvasContext.fillRect(x, y, width, height);
-};
-
+//variables globales de movimiento
 const DIRECTION_RIGHT = 4;
 const DIRECTION_UP = 3;
 const DIRECTION_LEFT = 2;
 const DIRECTION_BOTTOM = 1;
 const TUNEL = 10;
-let lives = 3;
+
+//Objetivo de los fantasmas (esquinas)
+const ghostBaseTargets = {
+    Blinky: 2, // arriba derecha
+    Pinky: 0,  // arriba izquierda
+    Inky: 3,   // abajo derecha
+    Clyde: 1   // abajo izquierda
+};
 
 // Variables del juego
+let lives = 3;
 let fps = 30;
 let pacman;
 let oneBlockSize = 20;
@@ -25,6 +26,13 @@ let wallOffset = (oneBlockSize - wallSpaceWidth) / 2;
 let wallInnerColor = "black";
 let tiempoActual = performance.now();
 
+//fondo para el lienzo de juego
+function createRect (x, y, width, height, color) {
+    canvasContext.fillStyle = color;
+    canvasContext.fillRect(x, y, width, height);
+};
+
+//MAPA
 // 1 = pared
 // 0 = no pared
 // 2 = comida
@@ -57,6 +65,7 @@ let map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
+//como se determina a que esquina va los fantasmas sino no tienen a pacman en el rango
 let randomTargetsForGhosts = [
     { x: 1 * oneBlockSize, y: 1 * oneBlockSize },
     { x: 1 * oneBlockSize, y: (map.length - 2) * oneBlockSize },
@@ -64,10 +73,30 @@ let randomTargetsForGhosts = [
     {x: (map[0].length - 2) * oneBlockSize, y: (map.length - 2) * oneBlockSize,},
 ];
 
+//llamadas para iniciar el juego
+createNewPacman();
+createGhosts();
+gameLoop();
+window.addEventListener("keydown", teclado, false);
+
+//FUNCIONES
+//crear elemntos del juego
 function createNewPacman(){
     pacman = new Pacman(oneBlockSize*10, oneBlockSize*17, oneBlockSize, oneBlockSize, oneBlockSize / 5);
 };
+function createGhosts() {
+    ghosts = [];
+    let Blinky = new Ghost(9 * oneBlockSize, 10 * oneBlockSize, oneBlockSize, oneBlockSize, pacman.speed / 2, 0, "Blinky");
+    ghosts.push(Blinky);
+    let Pinky = new Ghost(10 * oneBlockSize, 10 * oneBlockSize, oneBlockSize, oneBlockSize, pacman.speed / 2, 7, "Pinky");
+    ghosts.push(Pinky);
+    let Inky = new Ghost(9 * oneBlockSize, 11 * oneBlockSize, oneBlockSize, oneBlockSize, pacman.speed / 2, 8, "Inky");
+    ghosts.push(Inky);
+    let Clyde = new Ghost(10 * oneBlockSize, 11 * oneBlockSize, oneBlockSize, oneBlockSize, pacman.speed / 2, 9, "Clyde");
+    ghosts.push(Clyde);
+};
 
+//funciones principales del juego
 function gameLoop() {
     let ahora = performance.now();
     let deltatime = ahora - tiempoActual;
@@ -75,23 +104,6 @@ function gameLoop() {
     draw();
     update(deltatime);
 };
-
-let gameInterval = setInterval(gameLoop, 1000 / fps);
-
-function restartPacmanAndGhosts() {
-    createNewPacman();
-    createGhosts();
-};
-
-function onGhostCollision() {
-    console.log("tocado");
-    lives--;
-    restartPacmanAndGhosts();
-    if (lives == 0) {
-        gameOver();
-    }
-};
-
 function update(deltatime) {
     pacman.moveProcess();
     pacman.eat();
@@ -104,60 +116,59 @@ function update(deltatime) {
     }
 };
 
-function drawWin(){
-    if(!graficos) return;
-    canvasContext.font = "30px Emulogic";
-    canvasContext.fillStyle = "white";
-    canvasContext.fillText("WIN!", 180, 230);
+//temporizador que controla la velocidad de reproduccion
+let gameInterval = setInterval(gameLoop, 1000 / fps);
+
+//reinicio
+function restartPacmanAndGhosts() {
+    createNewPacman();
+    createGhosts();
+};
+
+//evento de golpe
+function onGhostCollision() {
+    console.log("tocado");
+    lives--;
+    restartPacmanAndGhosts();
+    if (lives == 0) {
+        gameOver();
+    }
+};
+//evento de teclado
+function teclado (t){
+    if(pacman){
+        switch(t.keyCode) {
+            case 37: // flecha izquierda
+            case 65: // A
+                pacman.nextDirection = DIRECTION_LEFT;
+                break;
+            case 38: // flecha arriba
+            case 87: // W
+                pacman.nextDirection = DIRECTION_UP;
+                break;
+            case 39: // flecha derecha
+            case 68: // D
+                pacman.nextDirection = DIRECTION_RIGHT;
+                break;
+            case 40: // flecha abajo
+            case 83: // S
+                pacman.nextDirection = DIRECTION_BOTTOM;
+                break;
+        }
+    }
 }
 
+//funciones de victoria y derrota
 function win(){
     drawWin();
     clearInterval(gameInterval);
 }
-
 function gameOver(){
     drawGameOver();
     clearInterval(gameInterval);
 }
 
-function drawGameOver(){
-    if(!graficos) return;
-    canvasContext.font = "23px Emulogic";
-    canvasContext.fillStyle = "white";
-    canvasContext.fillText("GAME OVER", 140, 230);
-}
-
-function drawFoods() {
-    for (let i = 0; i < map.length; i++) {
-        for (let j = 0; j < map[0].length; j++) {
-            if (map[i][j] == 2) {
-                createRect(j * oneBlockSize + oneBlockSize / 3, i * oneBlockSize + oneBlockSize / 3, oneBlockSize / 5, oneBlockSize / 5, "#FEB897");
-            }
-            if(map[i][j] == 3){
-                createRect(j * oneBlockSize + oneBlockSize / 3, i * oneBlockSize + oneBlockSize / 3, oneBlockSize / 3, oneBlockSize / 3, "#FEB897");
-            }
-        }
-    }
-};
-
-function drawLives() {
-    if(!graficos) return;
-    canvasContext.font = "23px Emulogic";
-    canvasContext.fillStyle = "white";
-    canvasContext.fillText("Lives: ", 260, oneBlockSize * (map.length + 1));
-
-    for (let i = 0; i < lives; i++) {
-        pacmanList[1].dibuja(canvasContext, 330 + i * oneBlockSize, oneBlockSize * map.length + 8);
-    }
-};
-
-function drawScore() {
-    canvasContext.font = "23px Emulogic";
-    canvasContext.fillStyle = "white";
-    canvasContext.fillText("Score: " + score, 0, oneBlockSize * (map.length + 1));
-};
-
+//funciones de dibujo en pantalla
 function draw() {
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     createRect(0, 0, canvas.width, canvas.height, "black");
@@ -168,7 +179,6 @@ function draw() {
     drawScore();
     drawLives();
 };
-
 function drawWalls() {
     for (let i = 0; i < map.length; i++) {
         for (let j = 0; j < map[0].length; j++) {
@@ -193,45 +203,42 @@ function drawWalls() {
         }
     }
 };
-
-function createGhosts() {
-    ghosts = [];
-    let Blinky = new Ghost(9 * oneBlockSize, 10 * oneBlockSize, oneBlockSize, oneBlockSize, pacman.speed / 2, 6, "Blinky");
-    ghosts.push(Blinky);
-    let Pinky = new Ghost(10 * oneBlockSize, 10 * oneBlockSize, oneBlockSize, oneBlockSize, pacman.speed / 2, 7, "Pinky");
-    ghosts.push(Pinky);
-    let Inky = new Ghost(9 * oneBlockSize, 11 * oneBlockSize, oneBlockSize, oneBlockSize, pacman.speed / 2, 8, "Inky");
-    ghosts.push(Inky);
-    let Clyde = new Ghost(10 * oneBlockSize, 11 * oneBlockSize, oneBlockSize, oneBlockSize, pacman.speed / 2, 9, "Clyde");
-    ghosts.push(Clyde);
-};
-
-createNewPacman();
-createGhosts();
-gameLoop();
-
-window.addEventListener("keydown", teclado, false);
-
-function teclado (t){
-    if(pacman){
-        switch(t.keyCode) {
-            case 37: // flecha izquierda
-            case 65: // A
-                pacman.nextDirection = DIRECTION_LEFT;
-                break;
-            case 38: // flecha arriba
-            case 87: // W
-                pacman.nextDirection = DIRECTION_UP;
-                break;
-            case 39: // flecha derecha
-            case 68: // D
-                pacman.nextDirection = DIRECTION_RIGHT;
-                break;
-            case 40: // flecha abajo
-            case 83: // S
-                pacman.nextDirection = DIRECTION_BOTTOM;
-                break;
+function drawFoods() {
+    for (let i = 0; i < map.length; i++) {
+        for (let j = 0; j < map[0].length; j++) {
+            if (map[i][j] == 2) {
+                createRect(j * oneBlockSize + oneBlockSize / 3, i * oneBlockSize + oneBlockSize / 3, oneBlockSize / 5, oneBlockSize / 5, "#FEB897");
+            }
+            if(map[i][j] == 3){
+                createRect(j * oneBlockSize + oneBlockSize / 3, i * oneBlockSize + oneBlockSize / 3, oneBlockSize / 3, oneBlockSize / 3, "#FEB897");
+            }
         }
     }
+};
+function drawWin(){
+    if(!graficos) return;
+    canvasContext.font = "30px Emulogic";
+    canvasContext.fillStyle = "white";
+    canvasContext.fillText("WIN!", 180, 230);
 }
- 
+function drawGameOver(){
+    if(!graficos) return;
+    canvasContext.font = "23px Emulogic";
+    canvasContext.fillStyle = "white";
+    canvasContext.fillText("GAME OVER", 140, 230);
+}
+function drawLives() {
+    if(!graficos) return;
+    canvasContext.font = "23px Emulogic";
+    canvasContext.fillStyle = "white";
+    canvasContext.fillText("Lives: ", 260, oneBlockSize * (map.length + 1));
+
+    for (let i = 0; i < lives; i++) {
+        pacmanList[1].dibuja(canvasContext, 330 + i * oneBlockSize, oneBlockSize * map.length + 8);
+    }
+};
+function drawScore() {
+    canvasContext.font = "23px Emulogic";
+    canvasContext.fillStyle = "white";
+    canvasContext.fillText("Score: " + score, 0, oneBlockSize * (map.length + 1));
+};
