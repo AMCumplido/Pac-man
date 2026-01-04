@@ -1,3 +1,4 @@
+//pacman
 class Pacman {
     constructor(x, y, width, height, speed) {
         this.x = x;
@@ -13,7 +14,8 @@ class Pacman {
             this.changeAnimation();
         }, 100);
     }
-
+    
+    //para que pueda hacer el tunel
     manejoTunel(){
         if (this.getMapY() !== TUNEL) return;
 
@@ -27,6 +29,7 @@ class Pacman {
 
     }
 
+    //logica de movimiento
     moveProcess() {
         this.changeDirectionIfPossible();
         this.moveForwards();
@@ -37,6 +40,7 @@ class Pacman {
         }
     }
 
+    //comer la puntuación, depende del numero que tiene la casilla del mapa
     eat() {
         for (let i = 0; i < map.length; i++) {
             for (let j = 0; j < map[0].length; j++) {
@@ -53,6 +57,7 @@ class Pacman {
         }
     }
 
+    //cambio de direcciones
     moveBackwards() {
         switch (this.direction) {
             case DIRECTION_RIGHT: // Right
@@ -87,6 +92,7 @@ class Pacman {
         }
     }
 
+    //si toca paredes
     checkCollisions() {
         let isCollided = false;
         if (map[parseInt(this.y / oneBlockSize)][parseInt(this.x / oneBlockSize)] == 1 || 
@@ -98,6 +104,7 @@ class Pacman {
         return isCollided;
     }
 
+    //si toca fantasmas
     checkGhostCollision(ghosts) {
         for (let i = 0; i < ghosts.length; i++) {
             let ghost = ghosts[i];
@@ -108,6 +115,7 @@ class Pacman {
         return false;
     }
 
+    //determina si se puede cambiar la dirección en la posición
     changeDirectionIfPossible() {
         if (this.direction == this.nextDirection) return;
         let tempDirection = this.direction;
@@ -142,10 +150,12 @@ class Pacman {
         return mapY;
     }
 
+    //para que pacman cambie de sprite
     changeAnimation() {
         this.currentFrame = this.currentFrame == this.frameCount ? 1 : this.currentFrame + 1;
     }
 
+    //camo se pinta segun la direccion
     draw() {
         if(!graficos) return;
         let spriteIndex = 0;
