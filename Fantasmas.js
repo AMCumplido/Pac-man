@@ -9,24 +9,31 @@ class Ghost {
         this.direction = DIRECTION_RIGHT;
         this.range = range;
         this.name = name;
-        this.randomTargetIndex = parseInt(Math.random() * 4);
+        this.baseTargetIndex = ghostBaseTargets[name];
+        this.randomTargetIndex = this.baseTargetIndex;
         this.target = randomTargetsForGhosts[this.randomTargetIndex];
         this.tiempoUltimaDireccion = 0;
         this.tiempoCambioDireccion = 10000;
     }
 
+    //si pacman esta en el circulo
     isInRange() {
         let xDistance = Math.abs(pacman.getMapX() - this.getMapX());
         let yDistance = Math.abs(pacman.getMapY() - this.getMapY());
         return Math.sqrt(xDistance * xDistance + yDistance * yDistance) <= this.range;
     }
 
+    //cambio de direccion objetivo (esquinas)
     changeRandomDirection() {
-        let addition = 1;
-        this.randomTargetIndex += addition;
-        this.randomTargetIndex = this.randomTargetIndex % 4;
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * randomTargetsForGhosts.length);
+        } while (newIndex === this.randomTargetIndex);
+
+        this.randomTargetIndex = newIndex;
     }
 
+    //para que pueda atravesar el tunel
     manejoTunel(){
         if (this.getMapY() !== TUNEL) return;
 
@@ -40,6 +47,7 @@ class Ghost {
 
     }
 
+    //como sigue el fantasma a pacman
     moveProcess() {
         if(this.name === "Blinky"){
             this.target = pacman;
@@ -60,6 +68,7 @@ class Ghost {
         }
     }
 
+    //mismo funcionamiento que pacman
     moveBackwards() {
         switch (this.direction) {
             case 4: // Right
@@ -126,6 +135,7 @@ class Ghost {
         //console.log(this.direction);
     }
 
+    //para calcular la direccion a la que seguir
     calculateNewDirection(map, destX, destY) {
         let mp = [];
         for (let i = 0; i < map.length; i++) {
@@ -203,7 +213,7 @@ class Ghost {
         return Math.floor((this.y + this.height - 1) / oneBlockSize);
     }
 
-
+    //para que cambie de sprite
     changeAnimation() {
         this.currentFrame =
             this.currentFrame == this.frameCount ? 1 : this.currentFrame + 1;
@@ -244,6 +254,7 @@ class Ghost {
 
 }
 
+//para que no se altere si cambias de pantalla el deltatime
 function updateGhosts(deltatime) {
     for (let i = 0; i < ghosts.length; i++) {
         let ghost = ghosts[i];
@@ -256,9 +267,11 @@ function updateGhosts(deltatime) {
     }
 };
 
+//para que se pinten
 function drawGhosts() {
     if(!graficos) return;
     for (let i = 0; i < ghosts.length; i++) {
         ghosts[i].draw();
     }
 };
+
